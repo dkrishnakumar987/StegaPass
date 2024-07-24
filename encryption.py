@@ -2,30 +2,38 @@ from Cryptodome.Cipher import AES
 from Cryptodome.Random import get_random_bytes
 
 def encrypt_pwd(password, key):
-    """Function to Encrypt Passwords using AES
-
+    """
+    Encrypts a password using AES encryption with the EAX mode.
+    
     Args:
-        password (string): Password to Encrypt
-        key (byte): AES Encryption Key
-
+        password (str): The password to be encrypted.
+        key (bytes): The AES encryption key.
+        
     Returns:
-        tuple(byte, byte, byte): Encrypted Password , Nonce, Tag
+        tuple: A tuple containing the ciphertext, nonce, and tag.
+            - ciphertext (bytes): The encrypted password.
+            - nonce (bytes): The nonce used for encryption.
+            - tag (bytes): The tag used for authentication.
+    
+    Raises:
+        TypeError: If the password is not a string or the key is not bytes.
     """
     cipher = AES.new(key, AES.MODE_EAX)
     ciphertext, tag = cipher.encrypt_and_digest(password.encode('utf8'))
     return ciphertext, cipher.nonce, tag
 
 def decrypt_pwd(ciphertext, nonce, tag, key):
-    """Function to Decrypt Passwords using AES
+    """
+    Decrypts a password using AES encryption with the EAX mode.
 
     Args:
-        ciphertext (byte): Encrypted Password
-        nonce (byte): Nonce for encryption
-        tag (byte): Tag for encryption
-        key (byte): AES Encryption Key
+        ciphertext (bytes): The encrypted password.
+        nonce (bytes): The nonce used for encryption.
+        tag (bytes): The tag used for authentication.
+        key (bytes): The AES encryption key.
 
     Returns:
-        string: Decrypted Password
+        str: The decrypted password.
     """
     cipher = AES.new(key, AES.MODE_EAX, nonce)
     password = cipher.decrypt_and_verify(ciphertext, tag)
