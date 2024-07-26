@@ -2,6 +2,20 @@ from PIL import Image
 import numpy as np
 
 def encode_img(img_path, data, out_path):
+    """
+    Encodes binary data into the least significant bits of each pixel in an image.
+
+    Args:
+        img_path (str): The path to the image file.
+        data (bytes): The binary data to encode.
+        out_path (str): The path to save the encoded image.
+
+    Raises:
+        ValueError: If the data is too large to fit in the given image.
+
+    Returns:
+        None
+    """
     img = Image.open(img_path)
     pixels = np.array(img)
     
@@ -30,6 +44,19 @@ def encode_img(img_path, data, out_path):
     encoded_img.save(out_path)
 
 def decode_img(img_path, data_len):
+    """
+    Decodes binary data from the least significant bits of each pixel in an image.
+
+    Args:
+        img_path (str): The path to the image file.
+        data_len (int): The length of the binary data to decode.
+    
+    Raises:
+        None
+
+    Returns:
+        bytes: The decoded binary data.
+    """
     image = Image.open(img_path)
     pixels = np.array(image)
 
