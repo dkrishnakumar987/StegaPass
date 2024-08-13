@@ -1,5 +1,14 @@
+import base64
+
 from Cryptodome.Cipher import AES
+from Cryptodome.Protocol.KDF import PBKDF2
 from Cryptodome.Random import get_random_bytes
+
+nonce_len = 16
+tag_len = 16
+KEY_SIZE = 32
+SALT_SIZE = 16
+ITERATIONS = 100_000
 
 
 def encrypt_pwd(password: str, key: bytes) -> tuple[bytes, bytes, bytes]:
@@ -55,7 +64,9 @@ def add_data(ciphertext: bytes, nonce: bytes, tag: bytes) -> bytes:
     return ciphertext + nonce + tag
 
 
-def separate_data(data: bytes, nonce_len: int, tag_len: int) -> tuple[bytes, bytes, bytes]:
+def separate_data(
+    data: bytes, nonce_len: int, tag_len: int
+) -> tuple[bytes, bytes, bytes]:
     """
     Separates the given data into ciphertext, nonce, and tag.
     Args:
@@ -72,6 +83,33 @@ def separate_data(data: bytes, nonce_len: int, tag_len: int) -> tuple[bytes, byt
     nonce = data[nonce_start:tag_start]
     tag = data[tag_start:]
     return ciphertext, nonce, tag
+
+
+def gen_key(password: str) -> bytes:
+    """Generate a key from a password."""
+    salt = get_random_bytes(SALT_SIZE)
+    key = PBKDF2(password, salt, dkLen=KEY_SIZE, count=ITERATIONS)
+    return base64.b64encode(salt + key)
+
+
+def load_key(path: str) -> bytes:
+    """Load the encryption key from the file."""
+    with open(path, "rb") as f:
+        return f.read()
+
+
+def verify_key(password: str, stored_key: bytes) -> bool:
+    """Verify if the password-derived key matches the stored key."""
+    decoded_data = base64.b64decode(stored_key)
+    salt, key = decoded_data[:SALT_SIZE], decoded_data[SALT_SIZE:]
+    derived_key = PBKDF2(password, salt, dkLen=KEY_SIZE, count=ITERATIONS)
+    return key == derived_key
+
+
+def extract_key(stored_key: bytes) -> bytes:
+    """Extract the actual AES key from the stored key."""
+    decoded_data = base64.b64decode(stored_key)
+    return decoded_data[SALT_SIZE:]
 
 
 # Testing
