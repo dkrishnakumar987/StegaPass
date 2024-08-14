@@ -64,6 +64,9 @@ StegaPass is a cutting-edge Python application that combines the power of stegan
 
    The GUI provides an intuitive way to add, retrieve, and manage your passwords. Follow the on-screen instructions to navigate through the application.
 
+4. **Important**
+    Use only PNG files. This project does not support other lossy filetypes like JPEG, JPG, WEBP.
+
 ## Project Structure
 
 - `gui.py`: The graphical user interface for StegaPass, serving as the main entry point for users.
