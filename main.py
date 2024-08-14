@@ -27,7 +27,7 @@ def save_user_data(username: str, data: dict):
         json.dump(data, f, indent=4)
 
 
-def register_user(username: str):
+def register_user(username: str, password: str):
     """Register a new user and create an encryption key."""
     user_dir = os.path.join(UsrDataDir, username)
     key_file = os.path.join(user_dir, "encryption_key.bin")
@@ -38,7 +38,6 @@ def register_user(username: str):
     image_dir = os.path.join(user_dir, "ImageStorage")
     os.makedirs(os.path.join(image_dir, "OriginalImages"))
     os.makedirs(os.path.join(image_dir, "SteganoImages"))
-    password = getpass(f"Create a master password for user {username}: ")
     key = enc.gen_key(password)
     with open(key_file, "wb") as f:
         f.write(key)
@@ -46,7 +45,7 @@ def register_user(username: str):
     return key
 
 
-def login_user(username: str):
+def login_user(username: str, password: str):
     """Authenticate an existing user and load their encryption key."""
     user_dir = os.path.join(UsrDataDir, username)
     key_file = os.path.join(user_dir, "encryption_key.bin")
@@ -54,7 +53,6 @@ def login_user(username: str):
         print("User does not exist.")
         return None
 
-    password = getpass(f"Enter the master password for user {username}: ")
     stored_key = enc.load_key(key_file)
     if enc.verify_key(password, stored_key):
         print(f"User {username} logged in.")
@@ -96,8 +94,7 @@ def get_password(username: str, service: str, key: bytes):
     encrypted_data = steg.decode_img(image_path)
     cipher, nonce, tag = enc.separate_data(encrypted_data, enc.nonce_len, enc.tag_len)
     decrypted_pwd = enc.decrypt_pwd(cipher, nonce, tag, key)
-
-    print(f"Password for {service}: {decrypted_pwd}")
+    return decrypted_pwd
 
 
 def main_menu():
@@ -111,10 +108,12 @@ def main_menu():
 
         if choice == "1":
             username = input("Enter a new username: ").strip()
-            register_user(username)
+            password = getpass("Enter a master password: ").strip()
+            register_user(username, password)
         elif choice == "2":
             username = input("Enter your username: ").strip()
-            key = login_user(username)
+            password = getpass("Enter your master password: ").strip()
+            key = login_user(username, password)
             if key:
                 user_sub_menu(username, key)
         elif choice == "3":
@@ -148,4 +147,3 @@ def user_sub_menu(username, key):
 
 if __name__ == "__main__":
     main_menu()
-

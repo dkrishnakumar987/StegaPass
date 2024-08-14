@@ -85,11 +85,3 @@ def decode_img(img_path):
         data.append(int(byte_str, 2))
 
     return bytes(data)
-
-
-# Testing
-""" img_path = 'ImageStorage/OriginalImages/test2.png'
-out_path = 'ImageStorage/SteganoImages/test2.png'
-data = b'Hello, World!'
-encode_img(img_path, data, out_path)
-print(decode_img(out_path, len(data))) """

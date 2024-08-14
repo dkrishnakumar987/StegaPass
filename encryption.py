@@ -110,18 +110,3 @@ def extract_key(stored_key: bytes) -> bytes:
     """Extract the actual AES key from the stored key."""
     decoded_data = base64.b64decode(stored_key)
     return decoded_data[SALT_SIZE:]
-
-
-# Testing
-""" key = get_random_bytes(16)
-password = "password"
-encrypted_password, nonce, tag = encrypt_pwd(password, key)
-decrypted_password = decrypt_pwd(encrypted_password, nonce, tag, key)
-print(encrypted_password)
-print(type(encrypted_password))
-print(nonce)
-print(type(nonce))
-print(tag)
-print(type(tag))
-print(decrypted_password)
-print(type(decrypted_password)) """
